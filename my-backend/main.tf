@@ -6,6 +6,15 @@ terraform {
     }
   }
   required_version = ">1.1.0"
+  
+  backend "azurerm" {
+    resource_group_name  = "ayan-drift-test"
+    storage_account_name = "stateastracc"
+    container_name       = "tfstate"
+    key                  = "project2.tfstate"
+    use_azuread_auth     = true
+  }
+  
 }
 
 provider "azurerm" {
@@ -16,6 +25,40 @@ resource "azurerm_resource_group" "trg_name" {
     location = var.rg_location
   
 }
+
+resource "azurerm_resource_group" "trgcount_name" {
+    count = 2
+    
+    name = "${var.rg_name}${count.index}01"
+    location = var.rg_location
+  
+}
+
+
+
+variable "rggroupnam" {
+  type = map(string)
+
+  default = {
+    dev   = "ayan.rg_namedev"
+    qa    = "ayan.rg_name502qa"
+    prod  = "ayan.rg_name503prod"
+  }
+}
+
+resource "azurerm_resource_group" "trgforeaach_name" {
+  for_each = var.rggroupnam
+
+  name     = each.value
+  location = var.rg_location
+}
+
+
+
+
+
+
+/* 
 
 resource "azurerm_network_security_group" "NSG1" {
   name                = "ayan-nsg001"
@@ -51,6 +94,9 @@ resource "azurerm_storage_account" "state_str_acc" {
     environment = "staging"
   }
 }
+
+*/
+
 
 
 
